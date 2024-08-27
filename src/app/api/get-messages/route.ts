@@ -39,6 +39,10 @@ export async function GET(request: Request) {
         }, { status: 200 })
     }
     catch(error){
-    
+        console.log("Error in getting user messages",error)
+        return Response.json({
+            success: false,
+            message: "Not Authenticated"
+        }, { status: 500 })
 }
 }
