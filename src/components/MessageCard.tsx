@@ -34,13 +34,22 @@ type MessageCardProps = {
 const MessageCard = ({ message, onMessageDelete }: MessageCardProps) => {
   const { toast } = useToast();
   const handleDeleteConfirm = async () => {
-    const response = await axios.delete<ApiResponse>(
-      `/api/delete-message/${message._id}`
-    );
-    toast({
-      title: response.data.message,
-    });
-    onMessageDelete(message._id as messageId);
+    try {
+      const response = await axios.delete<ApiResponse>(
+        `/api/delete-message/${message._id}`
+      );
+      toast({
+        title: response.data.message,
+      });
+      onMessageDelete(message._id);
+    } catch (error) {
+      console.error('Error deleting message:', error);
+      toast({
+        title: "Error deleting message",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    }
   };
   return (
     <Card>
