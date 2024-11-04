@@ -4,6 +4,7 @@ import UserModel from "@/model/User";
 import bcrypt from "bcryptjs";
 import { NextAuthOptions } from "next-auth";
 
+// Configuration options for NextAuth
 export const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
@@ -13,10 +14,11 @@ export const authOptions: NextAuthOptions = {
                 email: { label: "Email", type: "text" },
                 password: { label: "Password", type: "password" }
             },
+            // Function to authorize user credentials
             async authorize(credentials: any): Promise<any> {
                 await dbConnect();
                 try {
-                    //fiind user by email or username
+                    // Find user by email or username
                     const user = await UserModel.findOne({
                         $or: [
                             { email: credentials.identifier },
@@ -29,6 +31,7 @@ export const authOptions: NextAuthOptions = {
                     if (!user.isVerified) {
                         throw new Error("Please Verify your Account before login ");
                     }
+                    // Compare provided password with stored hashed password
                     const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password)
                     if (isPasswordCorrect) {
                         return user
@@ -39,12 +42,11 @@ export const authOptions: NextAuthOptions = {
                 catch (err: any) {
                     throw new Error(err.message);
                 }
-
             }
         })
     ],
     callbacks: {
-
+        // Callback to customize JWT token
         async jwt({ token, user, }) {
             if (user) {
                 token._id = user._id?.toString();
@@ -53,8 +55,8 @@ export const authOptions: NextAuthOptions = {
                 token.username = user.username;
             }
             return token;
-
         },
+        // Callback to customize session object
         async session({ session, token }) {
             if (token) {
                 session.user._id = token._id
@@ -64,14 +66,15 @@ export const authOptions: NextAuthOptions = {
             }
             return session
         },
-
     },
-
+    // Custom pages for authentication
     pages: {
         signIn: '/sign-in'
     },
+    // Session strategy
     session: {
         strategy: 'jwt'
     },
+    // Secret for encrypting tokens, cookies, etc.
     secret: process.env.NEXTAUTH_SECRET
-}  
+}

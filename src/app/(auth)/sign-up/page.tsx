@@ -22,16 +22,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 
+// Main component for the sign-up page
 const Page = () => {
+  // State variables for managing username check and form submission
   const [username, setUsername] = useState("");
   const [usernameMessage, setUsernameMessage] = useState("");
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Debounce the username input to avoid excessive API calls
   const debounced = useDebounceCallback(setUsername, 300);
+
+  // Hooks for toast notifications and routing
   const { toast } = useToast();
   const router = useRouter();
 
-  //zod implementation
+  // Set up form handling with Zod schema validation
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -40,7 +46,8 @@ const Page = () => {
       password: "",
     },
   });
-  //check username is unique
+
+  // Effect hook to check if the username is unique
   useEffect(() => {
     const checkUsernameUnique = async () => {
       if (username) {
@@ -67,6 +74,7 @@ const Page = () => {
     checkUsernameUnique();
   }, [username]);
 
+  // Function to handle form submission
   const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
     setIsSubmitting(true);
     try {
@@ -90,6 +98,8 @@ const Page = () => {
       setIsSubmitting(false);
     }
   };
+
+  // Render the sign-up form
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
@@ -99,8 +109,10 @@ const Page = () => {
           </h1>
           <p className="mb-4">Sign up to start your anonymous adventure</p>
         </div>
+        {/* Form component with form state management */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            {/* Username input field with real-time availability check */}
             <FormField
               name="username"
               control={form.control}
@@ -131,6 +143,7 @@ const Page = () => {
                 </FormItem>
               )}
             />
+            {/* Email input field */}
             <FormField
               name="email"
               control={form.control}
@@ -144,6 +157,7 @@ const Page = () => {
                 </FormItem>
               )}
             />
+            {/* Password input field */}
             <FormField
               name="password"
               control={form.control}
@@ -158,6 +172,7 @@ const Page = () => {
                 </FormItem>
               )}
             />
+            {/* Submit button with loading state */}
             <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
@@ -169,6 +184,7 @@ const Page = () => {
             </Button>
           </form>
         </Form>
+        {/* Link to sign-in page */}
         <div className="text-center mt-4">
           <p>
             Already a member?{" "}

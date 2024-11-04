@@ -5,13 +5,16 @@ import { authOptions } from "../auth/[...nextauth]/options";
 import { getServerSession } from "next-auth";
 import { json } from "stream/consumers";
 
-
+// POST request handler for updating user's message acceptance status
 export async function POST(request: Request) {
+    // Connect to the database
     await dbConnect()
 
+    // Get the current user's session
     const session = await getServerSession(authOptions)
     const user: User = session?.user as User;
 
+    // Check if the user is authenticated
     if (!session || !session.user) {
         return Response.json({
             success: false,
@@ -20,9 +23,11 @@ export async function POST(request: Request) {
     }
 
     const userId = user?._id;
+    // Extract acceptMessages from the request body
     const { acceptMessages } = await request.json()
 
     try {
+        // Update the user's isAcceptingMessage status in the database
         const updatedUser = await UserModel.findByIdAndUpdate(userId, { isAcceptingMessage: acceptMessages }, { new: true })
         if (!updatedUser) {
             return Response.json(
@@ -33,6 +38,7 @@ export async function POST(request: Request) {
                 { status: 401 }
             )
         }
+        // Return success response with updated user data
         return Response.json(
             {
                 success: true,
@@ -44,6 +50,7 @@ export async function POST(request: Request) {
     }
     catch (error) {
         console.log("failed to update user status to accept messages")
+        // Return error response if update fails
         return Response.json(
             {
                 success: false,
@@ -53,13 +60,18 @@ export async function POST(request: Request) {
         )
     }
 }
+
+// GET request handler for retrieving user's message acceptance status
 export async function GET(request: Request) {
+    // Connect to the database
     await dbConnect()
 
+    // Get the current user's session
     const session = await getServerSession(authOptions)
     const user: User = session?.user as User;
 
     try {
+        // Check if the user is authenticated
         if (!session || !session.user) {
             return Response.json({
                 success: false,
@@ -68,6 +80,7 @@ export async function GET(request: Request) {
         }
 
         const userId = user?._id;
+        // Find the user in the database
         const foundUser = await UserModel.findById(userId)
         if (!foundUser) {
             return Response.json(
@@ -78,6 +91,7 @@ export async function GET(request: Request) {
                 { status: 404 }
             )
         }
+        // Return the user's message acceptance status
         return Response.json(
             {
                 success: true,
@@ -86,6 +100,7 @@ export async function GET(request: Request) {
             { status: 200 }
         )
     } catch (error) {
+        // Return error response if retrieval fails
         return Response.json(
             {
                 success: false,
