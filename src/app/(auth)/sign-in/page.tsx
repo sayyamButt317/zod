@@ -14,11 +14,14 @@ import { signInSchema } from "@/schema/signInSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import GOOGLE from "../../../../public/icons/google.png";
+import GITHUB from "../../../../public/icons/github.png";
 
 // Main component for the sign-in page
 const Page = () => {
@@ -128,6 +131,32 @@ const Page = () => {
             </Link>
           </p>
         </div>
+        <div className="mt-6 flex flex-col items-center">
+            <div className="relative w-full">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">Or continue with</span>
+              </div>
+            </div>
+            <div className="mt-6 flex justify-center space-x-4">
+              <Button
+                variant="outline"
+                onClick={() => signIn("google")}
+                className="w-12 h-12 p-0"
+              >
+                <Image src={GOOGLE} alt="Google" width={24} height={24} />
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => signIn("github")}
+                className="w-12 h-12 p-0"
+              >
+                <Image src={GITHUB} alt="GitHub" width={24} height={24} />
+              </Button>
+            </div>
+          </div>
       </div>
       ;
     </div>

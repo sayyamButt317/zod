@@ -3,6 +3,8 @@ import dbConnect from "@/lib/dbConnect";
 import UserModel from "@/model/User";
 import bcrypt from "bcryptjs";
 import { NextAuthOptions } from "next-auth";
+import GoogleProvider from "next-auth/providers/google"
+import GithubProvider from "next-auth/providers/github"
 
 // Configuration options for NextAuth
 export const authOptions: NextAuthOptions = {
@@ -43,7 +45,25 @@ export const authOptions: NextAuthOptions = {
                     throw new Error(err.message);
                 }
             }
-        })
+        }),
+       GoogleProvider({
+        clientId: process.env.GOOGLE_ID as string,
+        clientSecret: process.env.GOOGLE_SECRET as string,
+        authorization: {
+            params: {
+                prompt: "consent",
+                access_type: "offline",
+                response_type: "code"
+            }
+        }
+       }),
+       GithubProvider({
+        clientId: process.env.GITHUB_ID as string,
+        clientSecret: process.env.GITHUB_SECRET as string,
+       }),
+       
+       
+        
     ],
     callbacks: {
         // Callback to customize JWT token
